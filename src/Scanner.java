@@ -87,8 +87,8 @@ public class Scanner {
 	}
 	
 	int isIdentifier(String in){
-		for(int i = 0; i < keywords.length; i++)
-			if(in.equals(keywords[i]))
+		for(String key : keywords)
+			if(in.equals(key))
 				return -1;
 		for(int i = 0; i < in.length(); i++)
 			if(isLetter(in.charAt(i)) == 1)
@@ -97,8 +97,8 @@ public class Scanner {
 	}
 
 	int isKeyword(String in){
-		for(int i = 0; i < keywords.length; i++)
-			if(in.equals(keywords[i]))
+		for(String key : keywords)
+			if(in.equals(key))
 				return KEYWORD;
 		return -1;
 	}
