@@ -28,6 +28,7 @@ public class Scanner {
 	private static final int BRACKET = 6;
 	private static final int WHITESPACE = 7;
 	private static final int END_OF_INPUT = 8;
+	private static final int SEMICOLON = 9;
 	private static final int ERROR = -1;
 	
 	//keywords
@@ -49,29 +50,21 @@ public class Scanner {
 	
 	// Returns whether a character is an operator, -1 if not, index of operator if it is
 	int isOperator(char in){
-		for(int i = 0; i < operators.length; i++){
+		for(int i = 0; i < operators.length; i++)
 			// If the character is an operator, return the index of the operator
-			if(in == operators[i].charAt(0)){
+			if(in == operators[i].charAt(0))
 				return i;
-			}
-		}
 		return -1;
 	}
 
 	// Returns whether a character is a symbol, -1 if not, type if it is
 	int isSymbol(char in){
-		if(in == '(' || in == ')'){
-			// 0 indicates parenthesis
-			return 0;
-		}
-		if(in == '{' || in == '}'){
-			// 1 indicates bracket
-			return 1;
-		}
-		if(in == ';'){
-			// 2 indicates semicolon
-			return 2;
-		}
+		if(in == '(' || in == ')')
+			return PARENTHESIS;
+		if(in == '{' || in == '}')
+			return BRACKET;
+		if(in == ';')
+			return SEMICOLON;
 		return -1;
 	}
 	
