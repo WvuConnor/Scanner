@@ -47,12 +47,30 @@ public class Scanner {
 			
 			
 	};
+
+	int isDigit(char in){
+		if(in >= '0' && in <= '9')
+			return 1;
+		return -1;
+	}
+
+	int isLetter(char in){
+		if((in >= 'a' && in <= 'z') || (in >= 'A' && in <= 'Z'))
+			return 1;
+		return -1;
+	}
+
+	int isWhitespace(char in){
+		if(in == ' ' || in == '\t' || in == '\n')
+			return 1;
+		return -1;
+	}
 	
-	// Returns whether a character is an operator, -1 if not, index of operator if it is
-	int isOperator(char in){
+	// Returns whether a String is an operator, -1 if not, index of operator if it is
+	int isOperator(String in){
 		for(int i = 0; i < operators.length; i++)
 			// If the character is an operator, return the index of the operator
-			if(in == operators[i].charAt(0))
+			if(in.equals(operators[i]))
 				return i;
 		return -1;
 	}
@@ -68,5 +86,22 @@ public class Scanner {
 		return -1;
 	}
 	
+	int isIdentifier(String in){
+		for(int i = 0; i < keywords.length; i++)
+			if(in.equals(keywords[i]))
+				return -1;
+		for(int i = 0; i < in.length(); i++)
+			if(isLetter(in.charAt(i)) == 1)
+				return -1;
+		return IDENTIFIER;
+	}
+
+	int isKeyword(String in){
+		for(int i = 0; i < keywords.length; i++)
+			if(in.equals(keywords[i]))
+				return KEYWORD;
+		return -1;
+	}
+
 } //end scanner class
 
