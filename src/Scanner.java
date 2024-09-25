@@ -16,7 +16,7 @@ public class Scanner {
 			String currentToken = "Token(type=" + type + ", value=" + value + ")";
 			return currentToken;
 		}
-	}//End Token Class
+	} //End Token Class
 	
 	//STATES
 	private static final int START = 0;
@@ -49,11 +49,5 @@ public class Scanner {
 	
 	
 	
-	
-	public static void main(String args[]) {
-		
-		
-		
-	}//end main
-}//end scanner class
+} //end scanner class
 
