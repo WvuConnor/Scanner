@@ -48,33 +48,40 @@ public class Scanner {
 			
 			
 	};
+	
 
+	/**
+	 * BEGIN HELPER METHODS
+	 */
+
+	// Checks if a character is a digit
 	int isDigit(char in){
 		if(in >= '0' && in <= '9')
 			return 1;
-		return -1;
+		return ERROR;
 	}
 
+	// Checks if a character is a letter
 	int isLetter(char in){
 		if((in >= 'a' && in <= 'z') || (in >= 'A' && in <= 'Z'))
 			return 1;
-		return -1;
+		return ERROR;
 	}
 
+	// Checks if a character is whitespace
 	int isWhitespace(char in){
 		if(in == ' ' || in == '\t' || in == '\n')
 			return 1;
-		return -1;
+		return ERROR;
 	}
 	
-<<<<<<< HEAD
 	// Returns whether a String is an operator, -1 if not, index of operator if it is
 	int isOperator(String in){
 		for(int i = 0; i < operators.length; i++)
 			// If the character is an operator, return the index of the operator
 			if(in.equals(operators[i]))
 				return i;
-		return -1;
+		return ERROR;
 	}
 
 	// Returns whether a character is a symbol, -1 if not, type if it is
@@ -85,63 +92,27 @@ public class Scanner {
 			return BRACKET;
 		if(in == ';')
 			return SEMICOLON;
-		return -1;
+		return ERROR;
 	}
 	
+	// Returns whether a character is an identifier, -1 if not, identifier value if it is
 	int isIdentifier(String in){
 		for(String key : keywords)
 			if(in.equals(key))
-				return -1;
+				return ERROR;
 		for(int i = 0; i < in.length(); i++)
 			if(isLetter(in.charAt(i)) == 1)
-				return -1;
+				return ERROR;
 		return IDENTIFIER;
 	}
 
+	// Returns whether a String is a keyword, -1 if not, keyword value if it is
 	int isKeyword(String in){
 		for(String key : keywords)
 			if(in.equals(key))
 				return KEYWORD;
-		return -1;
+		return ERROR;
 	}
 
-=======
-
-	/**
-	 * BEGIN HELPER METHODS
-	 */
-
-	//Check if a character is a digit - done (using Char.isDigit() java method)
-	
-	//Check if a character is a letter - done (using Char.isLetter() java method)
-
-	//Check if a character is a whitespace - done (using Char.isWhitespace() java method)
-
-	//Check if a character is an operator +, -, ETC - needs written
-
-	//Check if a character is a symbol '(, ), [, ]' - needs written
-
-	//check if a token is an identifier - needs written
-		//would check if every character is a letter, thats it
-
-
-	//check if a token is a keyword - needs written
-		//would check if every char is a letter, and if the string is in the keywords array
-
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-	
->>>>>>> b0d1115335afcb1c827d6f94143cdb72f1e3a224
 } //end scanner class
 
