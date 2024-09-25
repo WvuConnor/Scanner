@@ -1,4 +1,5 @@
 public class Scanner {
+
 	enum TokenType{
 		KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, EOI;
 	}
@@ -66,6 +67,7 @@ public class Scanner {
 		return -1;
 	}
 	
+<<<<<<< HEAD
 	// Returns whether a String is an operator, -1 if not, index of operator if it is
 	int isOperator(String in){
 		for(int i = 0; i < operators.length; i++)
@@ -103,5 +105,43 @@ public class Scanner {
 		return -1;
 	}
 
+=======
+
+	/**
+	 * BEGIN HELPER METHODS
+	 */
+
+	//Check if a character is a digit - done (using Char.isDigit() java method)
+	
+	//Check if a character is a letter - done (using Char.isLetter() java method)
+
+	//Check if a character is a whitespace - done (using Char.isWhitespace() java method)
+
+	//Check if a character is an operator +, -, ETC - needs written
+
+	//Check if a character is a symbol '(, ), [, ]' - needs written
+
+	//check if a token is an identifier - needs written
+		//would check if every character is a letter, thats it
+
+
+	//check if a token is a keyword - needs written
+		//would check if every char is a letter, and if the string is in the keywords array
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+>>>>>>> b0d1115335afcb1c827d6f94143cdb72f1e3a224
 } //end scanner class
 
