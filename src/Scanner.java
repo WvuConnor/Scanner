@@ -114,5 +114,34 @@ public class Scanner {
 		return ERROR;
 	}
 
+
+	/**
+	 * END HELPER METHODS
+	 */
+
+
+	 /*
+	  * not worried about states at this point, just tokenizing strings rn
+	  */
+	  
+	// Scans a string and returns a list of tokens
+	public Token[] scan(String input){
+		// Token[] tokens = new Token[];
+		int state = START;
+		int tokenIndex = 0;
+		
+		// Loop through the input string
+		for(int i = 0; i < input.length(); i++)
+		{
+			char curr = input.charAt(i);
+
+			// Check if the character is a digit
+
+
+			// tokens.add( new Token(TokenType.KEYWORD, isKeyword(input)) );
+		}
+
+		return tokens;
+
 } //end scanner class
 
