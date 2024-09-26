@@ -91,15 +91,11 @@ public class Scanner {
 							}else if(c == '{' || c == '}'){
 								currentState = BRACKET;
 								currentToken.append(c);
-								tokens.add(new Token(TokennType.BRACKET, currentToken.toString()));
+								tokens.add(new Token(TokenType.BRACKET, currentToken.toString()));
 							}
 				}
 		}
 	
-
-
-
-
 		return tokens;
 	}
 
