@@ -18,38 +18,21 @@ public class Scanner {
 			return currentToken;
 		}
 	} //End Token Class
-	
-	//STATES
-	private static final int START = 0;
-	private static final int LITERAL = 1;
-	private static final int IDENTIFIER = 2;
-	private static final int OPERATOR = 3;
-	private static final int KEYWORD = 4;
-	private static final int PARENTHESIS = 5;
-	private static final int BRACKET = 6;
-	private static final int WHITESPACE = 7;
-	private static final int END_OF_INPUT = 8;
-	private static final int SEMICOLON = 9;
-	private static final int ERROR = -1;
+
+	// Accepting State Tokens
+	Token OPEN_PARENTHESIS new Token(TokenType.OPEN_PARENTHESIS, value:"\(");
 	
 	//keywords
-	private static final String keywords[] = {"for", "while", "if"};
-	private static final String operators[] = {"+", "++", "==", "--", "&&", "&", "-", "%", "/", "=", "<"};
+	private static final String inputs[] = {"(",")","{","}","&","|","=",".","+","-","*","/","%","<",">","0-9","w","h","i","l","e","f","o","r","a","t","n","a-z"};
+	private static final int states[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
 	
 	//State Transition Array
-	private static final int STATE_TRANSITION[][]= {
-			{LITERAL, IDENTIFIER, OPERATOR, KEYWORD, LITERAL, PARENTHESIS, BRACKET, WHITESPACE, END_OF_INPUT, ERROR}, //START STATE
-			{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR}, //State 1: Number State
-			{}, //State 2: IDENTIFIER
-			{}, //State 3: OPERATOR
-			{}, //State 4: KEYWORD
-			{}, //State 5: LITERAL
-			{}, //State 6: PARENTHESIS
-			
-			
+	private static final Token STATE_TRANSITION[][]= {
+		{new Token(TokenType.PARENTHESIS, "("), new Token(TokenType.PARENTHESIS, ")"), new Token(TokenType.BRACKET, "{"), new Token(TokenType.BRACKET, "}"), new Token(TokenType.OPERATOR, "&"), new Token(TokenType.OPERATOR, "|"), new Token(TokenType.OPERATOR, "="), new Token(TokenType.OPERATOR, "."), new Token(TokenType.OPERATOR, "+"), new Token(TokenType.OPERATOR, "-"), new Token(TokenType.OPERATOR, "*"), new Token(TokenType.OPERATOR, "/"), new Token(TokenType.OPERATOR, "%"), new Token(TokenType.OPERATOR, "<"), new Token(TokenType.OPERATOR, ">"), new Token(TokenType.LITERAL, "0-9"), new Token(TokenType.KEYWORD, "w"), new Token(TokenType.KEYWORD, "h"), new Token(TokenType.KEYWORD, "i"), new Token(TokenType.KEYWORD, "l"), new Token(TokenType.KEYWORD, "e"), new Token(TokenType.KEYWORD, "f"), new Token(TokenType.KEYWORD, "o"), new Token(TokenType.KEYWORD, "r"), new Token(TokenType.KEYWORD, "a"), new Token(TokenType.KEYWORD, "t"), new Token(TokenType.KEYWORD, "n"), new Token(TokenType.IDENTIFIER, "a-z")},
+		{},
+		{},
 	};
 	
-
 	/**
 	 * BEGIN HELPER METHODS
 	 */
@@ -124,24 +107,7 @@ public class Scanner {
 	  * not worried about states at this point, just tokenizing strings rn
 	  */
 	  
-	// Scans a string and returns a list of tokens
-	public Token[] scan(String input){
-		// Token[] tokens = new Token[];
-		int state = START;
-		int tokenIndex = 0;
-		
-		// Loop through the input string
-		for(int i = 0; i < input.length(); i++)
-		{
-			char curr = input.charAt(i);
-
-			// Check if the character is a digit
-
-
-			// tokens.add( new Token(TokenType.KEYWORD, isKeyword(input)) );
-		}
-
-		return tokens;
+	
 
 } //end scanner class
 
