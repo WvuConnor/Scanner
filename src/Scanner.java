@@ -51,7 +51,7 @@ public class Scanner {
 	
 	//keywords
 	private static final String keywords[] = {"for", "while", "if"};
-	private static final String operators[] = {"+", "++", "==", "--", "&&", "&", "-", "%", "/", "=", "<"};
+	private static final String operators[] = {"+", "++", "==", "--", "&&", "&", "-", "%", "/", "=", "<", ">"};
 	
 	//State Transition Array
 	private static final int STATE_TRANSITION[][]= {
@@ -71,45 +71,34 @@ public class Scanner {
 	 * BEGIN HELPER METHODS
 	 */
 
-	// Checks if a character is a digit
-	boolean isDigit(char in){
-		if(in >= '0' && in <= '9')
-			return true;
-		return false;
-	}
-
-	// Checks if a character is a letter
-	boolean isLetter(char in){
-		if((in >= 'a' && in <= 'z') || (in >= 'A' && in <= 'Z'))
-			return true;
-		return false;
-	}
-
-	// Checks if a character is whitespace
-	boolean isWhitespace(char in){
-		if(in == ' ' || in == '\t' || in == '\n')
-			return true;
-		return false;
-	}
+	
 	
 	// Returns whether a String is an operator, -1 if not, index of operator if it is
-	int isOperator(String in){
+	boolean isOperator(char in){
 		for(int i = 0; i < operators.length; i++)
 			// If the character is an operator, return the index of the operator
-			if(in.equals(operators[i]))
-				return i;
-		return ERROR;
+			if(Character.toString(in).equals(operators[i]));
+				return true;
+		return false;
 	}
 
+	
+
 	// Returns whether a character is a symbol, -1 if not, type if it is
-	int isSymbol(char in){
+	TokenType checkSymbol(char in){
 		if(in == '(' || in == ')')
-			return PARENTHESIS;
+			return TokenType.PARENTHESIS;
 		if(in == '{' || in == '}')
-			return BRACKET;
+			return TokenType.BRACKET;
 		if(in == ';')
-			return SEMICOLON;
-		return ERROR;
+			return TokenType.SEMICOLON;
+		return TokenType.EOI;
+	}
+
+	boolean isSymbol(char in){
+		if(in == '(' || in == ')' ||in == '{' || in == '}' || in == ';')
+			return true;
+		return false;
 	}
 	
 	// Returns whether a character is an identifier, -1 if not, identifier value if it is
@@ -118,7 +107,7 @@ public class Scanner {
 			if(in.equals(key))
 				return ERROR;
 		for(int i = 0; i < in.length(); i++)
-			if(isLetter(in.charAt(i)))
+			if(Character.isLetter(in.charAt(i)))
 				return ERROR;
 		return IDENTIFIER;
 	}
@@ -176,7 +165,7 @@ public class Scanner {
 				continue;
 			}
 			
-				if (isDigit(c))
+				if (Character.isDigit(c))
 			{
 				
 				int count = i + 1;
@@ -196,7 +185,7 @@ public class Scanner {
 				continue;
 			}
 			
-				if (isLetter(c))
+				if (Character.isLetter(c))
 			{
 				token = new Token(TokenType.LITERAL, String.valueOf(c));
 				// single letter
@@ -206,7 +195,7 @@ public class Scanner {
 						tokens.add(token);
 						continue;
 					}
-				if ( i < input.length() - 1 && !isLetter(input.charAt(i+1)))
+				if ( i < input.length() - 1 && !Character.isLetter(input.charAt(i+1)))
 				{
 					
 					tokens.add(token);
@@ -219,7 +208,7 @@ public class Scanner {
 				boolean found = false;
 
 				// if next char is also a letter, then it is a keyword
-				while ( count != input.length() && isLetter( (input.charAt(count))) && !found)
+				while ( count != input.length() && Character.isLetter( (input.charAt(count))) && !found)
 				{
 					word+= input.charAt(count);
 					count++;
@@ -239,12 +228,111 @@ public class Scanner {
 
 					tokens.add(new Token(type, word) );
 				continue;
+				} 
+
+				if (isSymbol(c))
+				{
+					tokens.add(new Token(checkSymbol(c), Character.toString(c)));
+					continue;
 				}
 
+				// check ops
+				if (isOperator(c)){
 
+					String operator;
+
+
+				if (c == '+')
+			{
+				if (i != input.length()-1 && input.charAt(i+1) == '+')
+					{
+						operator = "++";
+						i++; 
+						
+					}
+
+				else
+					operator = "+";
+					 continue;
+			}
+
+			else if (c == '-')
+			{
+				if (i != input.length()-1 && input.charAt(i+1) == '-')
+					{
+						operator = "--";
+						i++;
+					}
+
+				else
+					operator = "-";
+			}
+
+			else if (c == '*')
+			{
+				if (i != input.length()-1 && input.charAt(i+1) == '*')
+					{
+						operator = "**";
+						i++;
+					}
+				else 
+					operator = "*";
 				
+			}
+
+			else if (c == '/')
+			{
+				operator = "/";
+			}
+
+			else if (c == '%')
+			{
+				operator = "%";
+			}
+
+
+			else if (c == '&')
+			{
+				if (i != input.length()-1 && input.charAt(i+1) == '&')
+					{
+						operator = "&&";
+						i++;
+					}
+				else {
+					tokens.add(new Token(TokenType.EOI, "ERROR"));
+					continue;
 				}
-			
+			}
+
+			else if (c == '|')
+			{
+				if (i != input.length()-1 && input.charAt(i+1) == '|')
+					{
+						operator = "||";
+						i++;
+					}
+				else {	
+					tokens.add(new Token(TokenType.EOI, "ERROR"));
+					continue; 
+				}
+			}
+			else if (c == '>')
+			{
+				operator = ">";
+			}
+			else if (c == '<')
+			{
+				operator = "<";
+			}
+			else if (c == '=');
+			{
+				operator = "=";
+			}
+
+					tokens.add(new Token(TokenType.OPERATOR, operator));
+				
+				} // end operator clause
+		}
 			
 			
 			
