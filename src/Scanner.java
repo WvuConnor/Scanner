@@ -136,12 +136,21 @@ public class Scanner {
 			char curr = input.charAt(i);
 
 			// Check if the character is a digit
+			if(isDigit(curr) == 1)
+			{
+				// If the current state is the start state, set the state to the number state
+				if(state == START)
+					state = LITERAL;
+					
+			}
 
 
 			// tokens.add( new Token(TokenType.KEYWORD, isKeyword(input)) );
 		}
 
-		return tokens;
+		// return tokens;
+		return null;astgtaeft
+	}
 
 } //end scanner class
 
