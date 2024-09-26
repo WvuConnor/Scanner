@@ -36,18 +36,7 @@ public class Scanner {
 	private static final String keywords[] = {"for", "while", "if"};
 	private static final String operators[] = {"+", "++", "==", "--", "&&", "&", "-", "%", "/", "=", "<"};
 	
-	//State Transition Array
-	private static final int STATE_TRANSITION[][]= {
-			{LITERAL, IDENTIFIER, OPERATOR, KEYWORD, LITERAL, PARENTHESIS, BRACKET, WHITESPACE, END_OF_INPUT, ERROR}, //START STATE
-			{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR}, //State 1: Number State
-			{}, //State 2: IDENTIFIER
-			{}, //State 3: OPERATOR
-			{}, //State 4: KEYWORD
-			{}, //State 5: LITERAL
-			{}, //State 6: PARENTHESIS
-			
-			
-	};
+	
 	
 
 	/**
@@ -124,33 +113,89 @@ public class Scanner {
 	  * not worried about states at this point, just tokenizing strings rn
 	  */
 	  
-	// Scans a string and returns a list of tokens
-	public Token[] scan(String input){
-		// Token[] tokens = new Token[];
-		int state = START;
-		int tokenIndex = 0;
+	// // Scans a string and returns a list of tokens
+	// public Token[] scan(String input){
+	// 	// Token[] tokens = new Token[];
+	// 	int state = START;
+	// 	int tokenIndex = 0;
 		
-		// Loop through the input string
-		for(int i = 0; i < input.length(); i++)
-		{
-			char curr = input.charAt(i);
+	// 	// Loop through the input string
+	// 	for(int i = 0; i < input.length(); i++)
+	// 	{
+	// 		char curr = input.charAt(i);
 
-			// Check if the character is a digit
-			if(isDigit(curr) == 1)
-			{
-				// If the current state is the start state, set the state to the number state
-				if(state == START)
-					state = LITERAL;
+	// 		// Check if the character is a digit
+	// 		if(isDigit(curr) == 1)
+	// 		{
+	// 			// If the current state is the start state, set the state to the number state
+	// 			if(state == START)
+	// 				state = LITERAL;
 					
+	// 		}
+
+
+	// 		// tokens.add( new Token(TokenType.KEYWORD, isKeyword(input)) );
+	// 	}
+
+	// 	// return tokens;
+	// 	return null;astgtaeft
+	// }
+
+
+
+	//State Transition Array
+	private static final int STATE_TRANSITION[][]= {
+		{LITERAL, IDENTIFIER, OPERATOR, KEYWORD, LITERAL, PARENTHESIS, BRACKET, WHITESPACE, END_OF_INPUT, ERROR}, //START STATE
+		{LITERAL, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR, }, //State 1: Literal (Number)
+		{ERROR, IDENTIFIER, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 2: IDENTIFIER
+		{ERROR, ERROR, OPERATOR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 3: OPERATOR
+		{ERROR, ERROR, ERROR, KEYWORD, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 4: KEYWORD
+		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 5: PARENTHESIS
+		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 6: Bracket
+		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 7: Whitespace
+		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR}, //State 8: End_OF_INPUT
+		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR}, //ERROR STATE	
+};
+
+//Method to scan given input
+//Param input string
+//Return List of tokens
+private static List<Token> scan(String input){
+	List<Token> tokens = new ArrayList<>();
+	StringBuilder currentToken = new StringBuilder();
+	int currentState = START;
+
+	for(char c : input.toCharArray()){
+			switch(currentState){
+				case START:
+						if(Character.isDigit(c)){
+							currentState = LITERAL;
+							currentToken.append(c);
+						}else if(Character.isLetter(c)){
+							currentState = IDENTIFIER;
+							currentToken.append(c);
+						}else if(isOperator(c)){
+							currentState = OPERATOR;
+							currentToken.append(c);
+							tokens.add(new Token(TokenType.OPERATOR, currentToken.toString()));
+							currentToken.setLength(0);
+							currentState = START;
+						}else if(c == '(' || c == ')'){
+							currentState = PARENTHESIS;
+							currentToken.append(c);
+							tokens.add(new Token(TokenType.PARENTHESIS, currentToken.toString()));
+							currentToken.setLength(0);
+							currentState = START;
+						}else if(c == '{' || c == '}'){
+							currentState = BRACKET;
+							currentToken.append(c);
+							tokens.add(new Token(TokenType.BRACKET, currentToken.toString()));
+						}
 			}
-
-
-			// tokens.add( new Token(TokenType.KEYWORD, isKeyword(input)) );
-		}
-
-		// return tokens;
-		return null;astgtaeft
 	}
+
+	return tokens;
+}
 
 } //end scanner class
 
