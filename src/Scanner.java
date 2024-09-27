@@ -10,8 +10,8 @@ public class Scanner {
 
 	//creates an immutable map
 	Map<Character, Integer> stateMap = Map.ofEntries(
-		new AbstractMap.SimpleEntry<Character, Integer>('(', 0),
-		new AbstractMap.SimpleEntry<Character, Integer>(')', 1),
+		new AbstractMap.SimpleEntry<Object, Integer>('(', 0),
+		new AbstractMap.SimpleEntry<Object, Integer>(')', 1),
 		new AbstractMap.SimpleEntry<Character, Integer>('{', 2),
 		new AbstractMap.SimpleEntry<Character, Integer>('}', 3),
 		new AbstractMap.SimpleEntry<Character, Integer>('&', 4),
@@ -26,7 +26,7 @@ public class Scanner {
 		new AbstractMap.SimpleEntry<Character, Integer>('%', 13),
 		new AbstractMap.SimpleEntry<Character, Integer>('<', 14),
 		new AbstractMap.SimpleEntry<Character, Integer>('>', 15),
-		new AbstractMap.SimpleEntry<Character, Integer>('/[0-9]/', 16),
+		new AbstractMap.SimpleEntry<Character, Integer>("/[0-9]/", 16),
 		new AbstractMap.SimpleEntry<Character, Integer>('w', 17),
 		new AbstractMap.SimpleEntry<Character, Integer>('h', 18),
 		new AbstractMap.SimpleEntry<Character, Integer>('i', 19),
@@ -38,11 +38,11 @@ public class Scanner {
 		new AbstractMap.SimpleEntry<Character, Integer>('a', 25),
 		new AbstractMap.SimpleEntry<Character, Integer>('t', 26),
 		new AbstractMap.SimpleEntry<Character, Integer>('n', 27),
-		new AbstractMap.SimpleEntry<Character, Integer>('(', 28),
-		new AbstractMap.SimpleEntry<Character, Integer>('/[bdgjkmpqsu-vx-zA-Z]/', 29)
+		new AbstractMap.SimpleEntry<Character, Integer>('c', 28),
+		new AbstractMap.SimpleEntry<Character, Integer>("/[bdgjkmpqsu-vx-zA-Z]/", 29)
 	);
 
-	int[][] stateTransition = {
+	Integer[][] stateTransition = {
 		{1, 2, 3, 4, 5, 7, 44, 9, 12, 29, 31, 33, 34, 35, 36, 38, 11, 13, 46, 25, 46, 46, 18, 46, 46, 46, 46, 46, 40, 46},
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
@@ -97,7 +97,7 @@ public class Scanner {
 	TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.KEYWORD, 
 	TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, 
 	TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, 
-	TokenType.OPERATOR};
+	TokenType.OPERATOR, TokenType.IDENTIFIER};
 
 	
 	static class Token {
