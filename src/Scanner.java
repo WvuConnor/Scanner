@@ -77,7 +77,7 @@ public class Scanner {
 	boolean isOperator(char in){
 		for(int i = 0; i < operators.length; i++)
 			// If the character is an operator, return the index of the operator
-			if(Character.toString(in).equals(operators[i]));
+			if(Character.toString(in).equals(operators[i]))
 				return true;
 		return false;
 	}
@@ -219,7 +219,7 @@ public class Scanner {
 				// push cursor up to new position; count is what is looked at next
 				i = count - 1;
 				TokenType type;
-				if (word.equals("if") || word.equals("for") || word.equals("while")))
+				if (word.equals("if") || word.equals("for") || word.equals("while"))
 					type = TokenType.KEYWORD;
 					else if (word.equals("int") || word.equals("float") || word.equals("double") || word.equals("string") || word.equals("char"))
 					type = TokenType.IDENTIFIER;
