@@ -4,6 +4,10 @@ import java.util.list;
 
 public class Scanner {
 
+	enum TokenType{
+		KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, EOI;
+	}
+
 	//creates an immutable map
 	Map<Character, Integer> stateMap = Map.ofEntries(
 		new AbstractMap.SimpleEntry<Character, Integer>('(', 0),
@@ -34,6 +38,7 @@ public class Scanner {
 		new AbstractMap.SimpleEntry<Character, Integer>('t', 25),
 		new AbstractMap.SimpleEntry<Character, Integer>('n', 26),
 		new AbstractMap.SimpleEntry<Character, Integer>('(', 27),
+		new AbstractMap.SimpleEntry<Character, Integer>(/[bdgjkmpqsu-vx-zA-Z]/)
 	);
 
 	int[][] stateTransition = {
@@ -86,11 +91,9 @@ public class Scanner {
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46}
 	}
 
-	String[] acceptingState = {null, "PARENTHESIS", "PARENTHESIS", "BRACKET", "BRACKET", null, "OPERATOR", NULL, "OPERATOR", }
+	TokenType[] acceptingState = {null, TokenType.PARENTHESIS, TokenType.PARENTHESIS, TokenType.BRACKET, TokenType.BRACKET, null, TokenType.OPERATOR, null, TokenType.OPERATOR, }
 
-	enum TokenType{
-		KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, EOI;
-	}
+	
 	static class Token {
 		TokenType type;
 		String value;
