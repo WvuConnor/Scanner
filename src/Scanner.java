@@ -102,7 +102,12 @@ public class Scanner {
 		{null, null, null, null, null, null, null, 45, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
 	};
 
-	static TokenType acceptingStates[] = {};
+	static TokenType[] acceptingStates = {null, TokenType.PARENTHESIS, TokenType.PARENTHESIS, TokenType.BRACKET, TokenType.BRACKET, null, TokenType.OPERATOR, null, TokenType.OPERATOR, 
+		TokenType.OPERATOR, TokenType.OPERATOR, TokenType.LITERAL, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, 
+		TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.KEYWORD, 
+		TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, 
+		TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, 
+		TokenType.OPERATOR};
 
 	private static List<Token> scan(String input){
 		List<Token> tokens = new ArrayList<>();
@@ -124,8 +129,6 @@ public class Scanner {
 						currentToken.setLength(0);
 						state = 0;
 					}
-				}else{
-					throw new RuntimeException("Invalid Character: " + c);
 				}
 		}
 		return tokens;
@@ -137,6 +140,5 @@ public class Scanner {
 			for(Token token : tokens){
 				System.out.println(token);
 			}
-	
 		}
 }
