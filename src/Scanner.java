@@ -22,7 +22,7 @@ public class Scanner {
         }
     }
 	//creates an immutable map
-	static Map<Object, Integer> stateMap = Map.ofEntries(
+	static Map<Character, Integer> stateMap = Map.ofEntries(
 		new AbstractMap.SimpleEntry<>('(', 0),
 		new AbstractMap.SimpleEntry<>(')', 1),
 		new AbstractMap.SimpleEntry<>('{', 2),
@@ -90,7 +90,7 @@ public class Scanner {
 		{null, null, null, null, null, null, null, 10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
 		{null, null, null, null, null, null, null, null, 12, null, null, null, null, null, null, null, 11, null, null, null, null, null, null, null, null, null, null, null, null, null},
-		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null},
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 14, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 15, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 16, 46, 46, 46, 46, 46, 46, 46, 46, 46},
@@ -118,13 +118,13 @@ public class Scanner {
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
 		{null, null, null, null, null, null, null, 39, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
 		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 41, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
-		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 42, 46, 46, 46, 46},
-		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 43, 46, 46, 46, 46, 46},
-		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
-		{null, null, null, null, null, null, null, 45, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46}
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 41, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 42, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 43, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, 45, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46}
 	};
 
 	static TokenType[] acceptingStates = {null, TokenType.PARENTHESIS, TokenType.PARENTHESIS, TokenType.BRACKET, TokenType.BRACKET, null, TokenType.OPERATOR, null, TokenType.OPERATOR, 
@@ -132,14 +132,12 @@ public class Scanner {
 		TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.KEYWORD, 
 		TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, 
 		TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, 
-		TokenType.OPERATOR, TokenType.IDENTIFIER};
+		TokenType.OPERATOR, TokenType.KEYWORD, TokenType.IDENTIFIER};
 
 	private static List<Token> scan(String input){
 		List<Token> tokens = new ArrayList<>();
 		int state = 0; // Start
 		StringBuilder currentToken = new StringBuilder();
-		StringBuilder bookmark = new StringBuilder();
-	
 
 		for(int i = 0; i < input.length(); i++){
 				char c = input.charAt(i);
@@ -149,24 +147,21 @@ public class Scanner {
 					continue;
 				}
 				Integer column = stateMap.get(c);
-				//System.out.println(column);
 				if(stateTransition[state][column] != null){
 					state = stateTransition[state][column];
-					System.out.println(state);
+					System.out.println("State: " + state + " - Column: " + column + " - Char: " + c);
 					currentToken.append(c);
 					//check to see if accepting state  to finalize token
-					if(acceptingStates[state] != null && i < input.length() - 1){
-						Integer nextState = stateTransition[state][stateMap.get(input.charAt(i+1))];
-						if(acceptingStates[nextState] == null){
+					if(acceptingStates[state] != null){
+						if(i < input.length() - 1 && !Character.isWhitespace(input.charAt(i+1)) &&  stateTransition[state][stateMap.get(input.charAt(i+1))] == null){
+							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
+							currentToken.setLength(0);
+							state = 0;
+						} else {
 							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
 							currentToken.setLength(0);
 							state = 0;
 						}
-						
-					}else{
-						tokens.add(new Token(acceptingStates[state], currentToken.toString()));
-						currentToken.setLength(0);
-						state = 0;
 					}
 				}
 		}
