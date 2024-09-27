@@ -1,201 +1,174 @@
+import java.util.*;
+
 public class Scanner {
 
-	enum TokenType{
-		KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, EOI;
-	}
-	static class Token {
-		TokenType type;
-		String value;
-		
-		//Constructor
-		public Token(TokenType type, String value){
-			this.type = type;
-			this.value = value;
-		}
-		@Override
-		public String toString() {
-			String currentToken = "Token(type=" + type + ", value=" + value + ")";
-			return currentToken;
-		}
-	} //End Token Class
-	
-	//STATES
-	private static final int START = 0;
-	private static final int LITERAL = 1;
-	private static final int IDENTIFIER = 2;
-	private static final int OPERATOR = 3;
-	private static final int KEYWORD = 4;
-	private static final int PARENTHESIS = 5;
-	private static final int BRACKET = 6;
-	private static final int WHITESPACE = 7;
-	private static final int END_OF_INPUT = 8;
-	private static final int SEMICOLON = 9;
-	private static final int ERROR = -1;
-	
-	//keywords
-	private static final String keywords[] = {"for", "while", "if"};
-	private static final String operators[] = {"+", "++", "==", "--", "&&", "&", "-", "%", "/", "=", "<"};
-	
-	
-	
+    enum TokenType {
+        KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, WHITESPACE, EOI;
+    }
 
-	/**
-	 * BEGIN HELPER METHODS
-	 */
+    static class Token {
+        TokenType type;
+        String value;
 
-	// Checks if a character is a digit
-	int isDigit(char in){
-		if(in >= '0' && in <= '9')
-			return 1;
-		return ERROR;
-	}
+        public Token(TokenType type, String value) {
+            this.type = type;
+            this.value = value;
+        }
 
-	// Checks if a character is a letter
-	int isLetter(char in){
-		if((in >= 'a' && in <= 'z') || (in >= 'A' && in <= 'Z'))
-			return 1;
-		return ERROR;
-	}
+        @Override
+        public String toString() {
+            return "Token{type=" + type + ", value=" + value + "}";
+        }
+    }
 
-	// Checks if a character is whitespace
-	int isWhitespace(char in){
-		if(in == ' ' || in == '\t' || in == '\n')
-			return 1;
-		return ERROR;
-	}
-	
-	// Returns whether a String is an operator, -1 if not, index of operator if it is
-	int isOperator(String in){
-		for(int i = 0; i < operators.length; i++)
-			// If the character is an operator, return the index of the operator
-			if(in.equals(operators[i]))
-				return i;
-		return ERROR;
-	}
+    // State Transition Table (FSM): states and input symbol mapping
+    private static final int[][] stateTransitionTable = {
+        //   [letter] [digit] [operator] [paren] [bracket] [whitespace] [EOF]
+        {1, 2, 3, 4, 5, 0, -1}, //State 0 = Start 
+        {1, 1, -1, -1, -1, -1, -1}, // State 1 = Identifier
+        {-1, 2, -1, -1, -1, -1, -1}, // State 2 = Number
+        {-1, -1, -1, -1, -1, -1, -1}, // State 3 = Operator
+        {-1, -1, -1, -1, -1, -1, -1}, // State 4 = Parenthesis
+        {-1, -1, -1, -1, -1, -1, -1}, // State 5 = Bracket
+    };
 
-	// Returns whether a character is a symbol, -1 if not, type if it is
-	int isSymbol(char in){
-		if(in == '(' || in == ')')
-			return PARENTHESIS;
-		if(in == '{' || in == '}')
-			return BRACKET;
-		if(in == ';')
-			return SEMICOLON;
-		return ERROR;
-	}
-	
-	// Returns whether a character is an identifier, -1 if not, identifier value if it is
-	int isIdentifier(String in){
-		for(String key : keywords)
-			if(in.equals(key))
-				return ERROR;
-		for(int i = 0; i < in.length(); i++)
-			if(isLetter(in.charAt(i)) == 1)
-				return ERROR;
-		return IDENTIFIER;
-	}
+    // Dictionary for keywords and operators
+    private static final Map<String, TokenType> dictionary = new HashMap<>();
+    static {
+        // Keywords
+        dictionary.put("if", TokenType.KEYWORD);
+        dictionary.put("while", TokenType.KEYWORD);
+        dictionary.put("for", TokenType.KEYWORD);
+        // Operators
+        dictionary.put("<", TokenType.OPERATOR);
+        dictionary.put("<=", TokenType.OPERATOR);
+        dictionary.put(">", TokenType.OPERATOR);
+        dictionary.put(">=", TokenType.OPERATOR);
+        dictionary.put("=", TokenType.OPERATOR);
+        dictionary.put("==", TokenType.OPERATOR);
+        dictionary.put("+", TokenType.OPERATOR);
+        dictionary.put("-", TokenType.OPERATOR);
+				//Semicolon/Brackets/Parenthesis
+				dictionary.put("{", TokenType.BRACKET);
+				dictionary.put("}", TokenType.BRACKET);
+				dictionary.put("(", TokenType.PARENTHESIS);
+				dictionary.put(")", TokenType.PARENTHESIS);
+				dictionary.put(";", TokenType.SEMICOLON);
 
-	// Returns whether a String is a keyword, -1 if not, keyword value if it is
-	int isKeyword(String in){
-		for(String key : keywords)
-			if(in.equals(key))
-				return KEYWORD;
-		return ERROR;
-	}
+				//Whitespace
+				dictionary.put(" ", TokenType.WHITESPACE);
+    }
 
+    public static List<Token> scan(String input) {
+        List<Token> tokens = new ArrayList<>();
+        int state = 0;
+        StringBuilder tokenValue = new StringBuilder();
+        char[] chars = input.toCharArray();
 
-	/**
-	 * END HELPER METHODS
-	 */
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            int column = getColumn(c);
 
-
-	 /*
-	  * not worried about states at this point, just tokenizing strings rn
-	  */
-	  
-	// // Scans a string and returns a list of tokens
-	// public Token[] scan(String input){
-	// 	// Token[] tokens = new Token[];
-	// 	int state = START;
-	// 	int tokenIndex = 0;
-		
-	// 	// Loop through the input string
-	// 	for(int i = 0; i < input.length(); i++)
-	// 	{
-	// 		char curr = input.charAt(i);
-
-	// 		// Check if the character is a digit
-	// 		if(isDigit(curr) == 1)
-	// 		{
-	// 			// If the current state is the start state, set the state to the number state
-	// 			if(state == START)
-	// 				state = LITERAL;
-					
-	// 		}
-
-
-	// 		// tokens.add( new Token(TokenType.KEYWORD, isKeyword(input)) );
-	// 	}
-
-	// 	// return tokens;
-	// 	return null;astgtaeft
-	// }
-
-
-
-	//State Transition Array
-	private static final int STATE_TRANSITION[][]= {
-		{LITERAL, IDENTIFIER, OPERATOR, KEYWORD, LITERAL, PARENTHESIS, BRACKET, WHITESPACE, END_OF_INPUT, ERROR}, //START STATE
-		{LITERAL, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR, }, //State 1: Literal (Number)
-		{ERROR, IDENTIFIER, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 2: IDENTIFIER
-		{ERROR, ERROR, OPERATOR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 3: OPERATOR
-		{ERROR, ERROR, ERROR, KEYWORD, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 4: KEYWORD
-		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 5: PARENTHESIS
-		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 6: Bracket
-		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, END_OF_INPUT, ERROR}, //State 7: Whitespace
-		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR}, //State 8: End_OF_INPUT
-		{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR}, //ERROR STATE	
-};
-
-//Method to scan given input
-//Param input string
-//Return List of tokens
-private static List<Token> scan(String input){
-	List<Token> tokens = new ArrayList<>();
-	StringBuilder currentToken = new StringBuilder();
-	int currentState = START;
-
-	for(char c : input.toCharArray()){
-			switch(currentState){
-				case START:
-						if(Character.isDigit(c)){
-							currentState = LITERAL;
-							currentToken.append(c);
-						}else if(Character.isLetter(c)){
-							currentState = IDENTIFIER;
-							currentToken.append(c);
-						}else if(isOperator(c)){
-							currentState = OPERATOR;
-							currentToken.append(c);
-							tokens.add(new Token(TokenType.OPERATOR, currentToken.toString()));
-							currentToken.setLength(0);
-							currentState = START;
-						}else if(c == '(' || c == ')'){
-							currentState = PARENTHESIS;
-							currentToken.append(c);
-							tokens.add(new Token(TokenType.PARENTHESIS, currentToken.toString()));
-							currentToken.setLength(0);
-							currentState = START;
-						}else if(c == '{' || c == '}'){
-							currentState = BRACKET;
-							currentToken.append(c);
-							tokens.add(new Token(TokenType.BRACKET, currentToken.toString()));
+            if (column == -1) {
+                throw new IllegalArgumentException("Invalid input character: " + c);
+            }
+            if (c == '<' || c == '>') {
+                if (i + 1 < chars.length && chars[i + 1] == '=') {
+                    tokenValue.append(c).append('=');
+                    i++;
+                    tokens.add(new Token(TokenType.OPERATOR, tokenValue.toString()));
+                    tokenValue.setLength(0);
+                    state = 0; 
+                    continue;
+                }
+            }
+            if (c == '(' || c == ')') {
+                if (tokenValue.length() > 0) {
+                    tokens.add(classifyToken(tokenValue.toString()));
+                    tokenValue.setLength(0);
+                }
+                tokens.add(new Token(TokenType.PARENTHESIS, Character.toString(c)));
+                state = 0; 
+                continue;
+            }
+						if(c == '{' || c == '}'){
+							if(tokenValue.length() > 0){
+								tokens.add(classifyToken(tokenValue.toString()));
+								tokenValue.setLength(0);
+							}
+							tokens.add(new Token(TokenType.BRACKET, Character.toString(c)));
+							state = 0;
+							continue;
 						}
-			}
-	}
+						if (Character.isWhitespace(c)) {
+							if(tokenValue.length() > 0){
+									tokens.add(classifyToken(tokenValue.toString()));
+									tokenValue.setLength(0);
+							}
+							tokens.add(new Token(TokenType.WHITESPACE, " "));
+							state = 0; 
+							continue;
+						}
 
-	return tokens;
+            //find next state depending on column
+            int nextState = stateTransitionTable[state][column];
+
+            if (nextState == -1) {
+                if (tokenValue.length() > 0) {
+                    tokens.add(classifyToken(tokenValue.toString()));
+                    tokenValue.setLength(0);
+                }
+                state = 0;
+            } else {
+                tokenValue.append(c);
+                state = nextState;
+            }
+        }
+
+        if (tokenValue.length() > 0) {
+            tokens.add(classifyToken(tokenValue.toString()));
+        }
+
+				tokens.add(new Token(TokenType.EOI, "End of Input"));
+
+        return tokens;
+    }
+
+    private static Token classifyToken(String tokenValue) {
+        if (dictionary.containsKey(tokenValue)) {
+            return new Token(dictionary.get(tokenValue), tokenValue);
+        } else if (Character.isDigit(tokenValue.charAt(0))) {
+            return new Token(TokenType.LITERAL, tokenValue);
+        } else {
+            return new Token(TokenType.IDENTIFIER, tokenValue);
+        }
+    }
+
+    private static int getColumn(char c) {
+        if (Character.isLetter(c)) {
+            return 0; //Column 0 (Letter)
+        } else if (Character.isDigit(c)) {
+            return 1; //Column 1 (Number)
+        } else if ("+-*/<>=!".indexOf(c) >= 0) {
+            return 2; // Column 2 (Operators)
+        } else if (c == '(' || c == ')') {
+            return 3; //Column 3 (Parenthesis)
+        } else if (c == '{' || c == '}') {
+            return 4; //Column 4 (Bracket)
+        } else if (Character.isWhitespace(c)) {
+            return 5; //Column 5 (Whitespace)
+        } else if (c == ';') {
+            return 6; //Column 6 (Semicolon)
+        } else {
+            return -1;
+        }
+    }
+
+    public static void main(String[] args) {
+        String input = "if(sum=1);";
+        List<Token> tokens = scan(input);
+        for (Token token : tokens) {
+            System.out.println(token);
+        }
+    }
 }
-
-} //end scanner class
-
