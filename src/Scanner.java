@@ -20,8 +20,6 @@ public class Scanner {
             return "Token{type=" + type + ", value=" + value + "}";
         }
     }
-
-    // State Transition Table (FSM): states and input symbol mapping
     private static final int[][] stateTransitionTable = {
         //   [letter] [digit] [operator] [paren] [bracket] [whitespace] [EOF]
         {1, 2, 3, 4, 5, 0, -1}, //State 0 = Start 
@@ -48,6 +46,9 @@ public class Scanner {
         dictionary.put("==", TokenType.OPERATOR);
         dictionary.put("+", TokenType.OPERATOR);
         dictionary.put("-", TokenType.OPERATOR);
+				dictionary.put("!", TokenType.OPERATOR);
+				dictionary.put("&&", TokenType.OPERATOR);
+				dictionary.put("||", TokenType.OPERATOR);
 				//Semicolon/Brackets/Parenthesis
 				dictionary.put("{", TokenType.BRACKET);
 				dictionary.put("}", TokenType.BRACKET);
@@ -72,7 +73,7 @@ public class Scanner {
             if (column == -1) {
                 throw new IllegalArgumentException("Invalid input character: " + c);
             }
-            if (c == '<' || c == '>') {
+            if (c == '<' || c == '>' || c == '!') {
                 if (i + 1 < chars.length && chars[i + 1] == '=') {
                     tokenValue.append(c).append('=');
                     i++;
@@ -82,6 +83,16 @@ public class Scanner {
                     continue;
                 }
             }
+						if (c == '&' || c == '|') {
+							if (i + 1 < chars.length && chars[i + 1] == c) {
+									tokenValue.append(c).append(c); 
+									i++; 
+									tokens.add(new Token(TokenType.OPERATOR, tokenValue.toString()));
+									tokenValue.setLength(0);
+									state = 0;
+									continue;
+							}
+					}
             if (c == '(' || c == ')') {
                 if (tokenValue.length() > 0) {
                     tokens.add(classifyToken(tokenValue.toString()));
@@ -107,6 +118,15 @@ public class Scanner {
 							}
 							tokens.add(new Token(TokenType.WHITESPACE, " "));
 							state = 0; 
+							continue;
+						}
+						if(c == ';'){
+							if(tokenValue.length() > 0){
+								tokens.add(classifyToken(tokenValue.toString()));
+								tokenValue.setLength(0);
+							}
+							tokens.add(new Token(TokenType.SEMICOLON, ";"));
+							state = 0;
 							continue;
 						}
 
@@ -149,7 +169,7 @@ public class Scanner {
             return 0; //Column 0 (Letter)
         } else if (Character.isDigit(c)) {
             return 1; //Column 1 (Number)
-        } else if ("+-*/<>=!".indexOf(c) >= 0) {
+        } else if ("+-*/<>=!|&".indexOf(c) >= 0) {
             return 2; // Column 2 (Operators)
         } else if (c == '(' || c == ')') {
             return 3; //Column 3 (Parenthesis)
@@ -165,7 +185,8 @@ public class Scanner {
     }
 
     public static void main(String[] args) {
-        String input = "if(sum=1);";
+				System.out.println("Enter the input you'd like to tokenize: ");
+				String input = System.console().readLine();
         List<Token> tokens = scan(input);
         for (Token token : tokens) {
             System.out.println(token);
