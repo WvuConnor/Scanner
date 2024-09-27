@@ -1,346 +1,178 @@
-import java.util.ArrayList;
+import java.util.*;
+
 
 public class Scanner {
 
-	enum TokenType{
-		KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, EOI;
-	}
-	static class Token {
-		TokenType type;
-		String value;
-		
-		//Constructor
-		public Token(TokenType type, String value){
-			this.type = type;
-			this.value = value;
-		}
-		public TokenType toType(int t)
-		{
-			switch (t){
-				case 1: 
-				case 2: 
-				case 3: 
-				case 4: 
-				case 5: 
-				case 6: 
-				case 7: 
-				case 8: 
-				case 9: 
-				default: return TokenType.EOI;
-			}
-		}
-		@Override
-		public String toString() {
-			String currentToken = "Token(type=" + type + ", value=" + value + ")";
-			return currentToken;
-		}
-	} //End Token Class
-	
-	//STATES
-	private static final int START = 0;
-	private static final int LITERAL = 1;
-	private static final int IDENTIFIER = 2;
-	private static final int OPERATOR = 3;
-	private static final int KEYWORD = 4;
-	private static final int PARENTHESIS = 5;
-	private static final int BRACKET = 6;
-	private static final int WHITESPACE = 7;
-	private static final int END_OF_INPUT = 8;
-	private static final int SEMICOLON = 9;
-	private static final int ERROR = -1;
-	
-	//keywords
-	private static final String keywords[] = {"for", "while", "if"};
-	private static final String operators[] = {"+", "++", "==", "--", "&&", "&", "-", "%", "/", "=", "<", ">"};
-	
-	//State Transition Array
-	private static final int STATE_TRANSITION[][]= {
-			{LITERAL, IDENTIFIER, OPERATOR, KEYWORD, LITERAL, PARENTHESIS, BRACKET, WHITESPACE, END_OF_INPUT, ERROR}, //START STATE
-			{ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR}, //State 1: Number State
-			{}, //State 2: IDENTIFIER
-			{}, //State 3: OPERATOR
-			{}, //State 4: KEYWORD
-			{}, //State 5: LITERAL
-			{}, //State 6: PARENTHESIS
-			
-			
+    enum TokenType {
+        KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, WHITESPACE, EOI;
+    }
+
+    static class Token {
+        TokenType type;
+        String value;
+
+        public Token(TokenType type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "Token{type=" + type + ", value=" + value + "}";
+        }
+    }
+	//creates an immutable map
+	static Map<Character, Integer> stateMap = Map.ofEntries(
+		new AbstractMap.SimpleEntry<>('(', 0),
+		new AbstractMap.SimpleEntry<>(')', 1),
+		new AbstractMap.SimpleEntry<>('{', 2),
+		new AbstractMap.SimpleEntry<>('}', 3),
+		new AbstractMap.SimpleEntry<>('&', 4),
+		new AbstractMap.SimpleEntry<>('|', 5),
+		new AbstractMap.SimpleEntry<>('!', 6),
+		new AbstractMap.SimpleEntry<>('=', 7),
+		new AbstractMap.SimpleEntry<>('.', 8),
+		new AbstractMap.SimpleEntry<>('+', 9),
+		new AbstractMap.SimpleEntry<>('-', 10),
+		new AbstractMap.SimpleEntry<>('*', 11),
+		new AbstractMap.SimpleEntry<>('/', 12),
+		new AbstractMap.SimpleEntry<>('%', 13),
+		new AbstractMap.SimpleEntry<>('<', 14),
+		new AbstractMap.SimpleEntry<>('>', 15),
+		new AbstractMap.SimpleEntry<>('0', 16),
+		new AbstractMap.SimpleEntry<>('1', 16),
+		new AbstractMap.SimpleEntry<>('2', 16),
+		new AbstractMap.SimpleEntry<>('3', 16),
+		new AbstractMap.SimpleEntry<>('4', 16),
+		new AbstractMap.SimpleEntry<>('5', 16),
+		new AbstractMap.SimpleEntry<>('6', 16),
+		new AbstractMap.SimpleEntry<>('7', 16),
+		new AbstractMap.SimpleEntry<>('8', 16),
+		new AbstractMap.SimpleEntry<>('9', 16),
+
+		new AbstractMap.SimpleEntry<>('w', 17),
+		new AbstractMap.SimpleEntry<>('h', 18),
+		new AbstractMap.SimpleEntry<>('i', 19),
+		new AbstractMap.SimpleEntry<>('l', 20),
+		new AbstractMap.SimpleEntry<>('e', 21),
+		new AbstractMap.SimpleEntry<>('f', 22),
+		new AbstractMap.SimpleEntry<>('o', 23),
+		new AbstractMap.SimpleEntry<>('r', 24),
+		new AbstractMap.SimpleEntry<>('a', 25),
+		new AbstractMap.SimpleEntry<>('t', 26),
+		new AbstractMap.SimpleEntry<>('n', 27),
+		new AbstractMap.SimpleEntry<>('c', 28),
+		new AbstractMap.SimpleEntry<>('b', 29),
+		new AbstractMap.SimpleEntry<>('g', 29),
+		new AbstractMap.SimpleEntry<>('j', 29),
+		new AbstractMap.SimpleEntry<>('k', 29),
+		new AbstractMap.SimpleEntry<>('m', 29),
+		new AbstractMap.SimpleEntry<>('p', 29),
+		new AbstractMap.SimpleEntry<>('q', 29),
+		new AbstractMap.SimpleEntry<>('s', 29),
+		new AbstractMap.SimpleEntry<>('u', 29),
+		new AbstractMap.SimpleEntry<>('v', 29),
+		new AbstractMap.SimpleEntry<>('x', 29),
+		new AbstractMap.SimpleEntry<>('y', 29),
+		new AbstractMap.SimpleEntry<>('z', 29)
+);
+
+	static Integer[][] stateTransition = {
+		{1, 2, 3, 4, 5, 7, 44, 9, 12, 29, 31, 33, 34, 35, 36, 38, 11, 13, 46, 25, 46, 46, 18, 46, 46, 46, 46, 46, 40, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, 6, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, 8, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, 10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, 12, null, null, null, null, null, null, null, 11, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 14, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 15, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 16, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 17, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 21, 46, 46, 19, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 20, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 22, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 23, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 24, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 26, 46, 46, 46, 46, 27, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 28, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, 30, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, 32, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, 37, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, 39, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 41, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 42, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 43, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46},
+		{null, null, null, null, null, null, null, 45, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46}
 	};
-	
 
-	/**
-	 * BEGIN HELPER METHODS
-	 */
+	static TokenType[] acceptingStates = {null, TokenType.PARENTHESIS, TokenType.PARENTHESIS, TokenType.BRACKET, TokenType.BRACKET, null, TokenType.OPERATOR, null, TokenType.OPERATOR, 
+		TokenType.OPERATOR, TokenType.OPERATOR, TokenType.LITERAL, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, 
+		TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.KEYWORD, 
+		TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, 
+		TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, 
+		TokenType.OPERATOR, TokenType.KEYWORD, TokenType.IDENTIFIER};
 
-	
-	
-	// Returns whether a String is an operator, -1 if not, index of operator if it is
-	boolean isOperator(char in){
-		for(int i = 0; i < operators.length; i++)
-			// If the character is an operator, return the index of the operator
-			if(Character.toString(in).equals(operators[i]))
-				return true;
-		return false;
-	}
+	private static List<Token> scan(String input){
+		List<Token> tokens = new ArrayList<>();
+		int state = 0; // Start
+		StringBuilder currentToken = new StringBuilder();
 
-	
+		for(int i = 0; i < input.length(); i++){
+				char c = input.charAt(i);
 
-	// Returns whether a character is a symbol, -1 if not, type if it is
-	TokenType checkSymbol(char in){
-		if(in == '(' || in == ')')
-			return TokenType.PARENTHESIS;
-		if(in == '{' || in == '}')
-			return TokenType.BRACKET;
-		if(in == ';')
-			return TokenType.SEMICOLON;
-		return TokenType.EOI;
-	}
-
-	boolean isSymbol(char in){
-		if(in == '(' || in == ')' ||in == '{' || in == '}' || in == ';')
-			return true;
-		return false;
-	}
-	
-	// Returns whether a character is an identifier, -1 if not, identifier value if it is
-	int isIdentifier(String in){
-		for(String key : keywords)
-			if(in.equals(key))
-				return ERROR;
-		for(int i = 0; i < in.length(); i++)
-			if(Character.isLetter(in.charAt(i)))
-				return ERROR;
-		return IDENTIFIER;
-	}
-
-	// Returns whether a String is a keyword, -1 if not, keyword value if it is
-	int isKeyword(String in){
-		for(String key : keywords)
-			if(in.equals(key))
-				return KEYWORD;
-		return ERROR;
-	}
-
-
-	/**
-	 * END HELPER METHODS
-	 */
-
-
-	 /*
-	  * not worried about states at this point, just tokenizing strings rn
-	  */
-	  
-	// Scans a string and returns a list of tokens
-	public ArrayList<Token> scan(String input){
-		
-		int state = START;
-		int tokenIndex = 0;
-		var tokens = new ArrayList<Token>();
-
-
-
-		// Loop through the input string
-		for(int i = 0; i < input.length(); i++)
-		{
-			
-			char c = input.charAt(i);
-			Token token;
-
-			if (Character.isWhitespace(c))
-			{
-				int count = i + 1;
-				String whitespace = "" + c;
-				while (count != input.length() && Character.isWhitespace(input.charAt(count)))
-				{
-					whitespace+= input.charAt(count); 
-					count++;
-					
-				}
-
-				token = new Token(TokenType.KEYWORD, whitespace);
-				tokens.add(token);
-
-				// push cursor
-				i = count - 1;
-				continue;
-			}
-			
-				if (Character.isDigit(c))
-			{
-				
-				int count = i + 1;
-				String num = "" + c;
-				while (count != input.length() && Character.isDigit(input.charAt(count)))
-				{
-					num+= input.charAt(count); 
-					count++;
-					
-				}
-
-				token = new Token(TokenType.LITERAL, num);
-				tokens.add(token);
-
-				// push cursor
-				i = count - 1;
-				continue;
-			}
-			
-				if (Character.isLetter(c))
-			{
-				token = new Token(TokenType.LITERAL, String.valueOf(c));
-				// single letter
-
-				if (i == input.length() -1)
-					{
-						tokens.add(token);
-						continue;
-					}
-				if ( i < input.length() - 1 && !Character.isLetter(input.charAt(i+1)))
-				{
-					
-					tokens.add(token);
+				//Skip Whitespace
+				if(Character.isWhitespace(c)){
 					continue;
 				}
-
-
-				int count = i + 1;
-				String word = "" + c;
-				boolean found = false;
-
-				// if next char is also a letter, then it is a keyword
-				while ( count != input.length() && Character.isLetter( (input.charAt(count))) && !found)
-				{
-					word+= input.charAt(count);
-					count++;
-				
+				Integer column = stateMap.get(c);
+				if(stateTransition[state][column] != null){
+					state = stateTransition[state][column];
+					System.out.println("State: " + state + " - Column: " + column + " - Char: " + c);
+					currentToken.append(c);
+					//check to see if accepting state  to finalize token
+					if(acceptingStates[state] != null){
+						if(i < input.length() - 1 && !Character.isWhitespace(input.charAt(i+1)) &&  stateTransition[state][stateMap.get(input.charAt(i+1))] == null){
+							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
+							currentToken.setLength(0);
+							state = 0;
+						} else {
+							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
+							currentToken.setLength(0);
+							state = 0;
+						}
+					}
 				}
-				// take word and get the correct token name
-				
-				// push cursor up to new position; count is what is looked at next
-				i = count - 1;
-				TokenType type;
-				if (word.equals("if") || word.equals("for") || word.equals("while"))
-					type = TokenType.KEYWORD;
-					else if (word.equals("int") || word.equals("float") || word.equals("double") || word.equals("string") || word.equals("char"))
-					type = TokenType.IDENTIFIER;
-					else
-					type = TokenType.LITERAL;
-
-					tokens.add(new Token(type, word) );
-				continue;
-				} 
-
-				if (isSymbol(c))
-				{
-					tokens.add(new Token(checkSymbol(c), Character.toString(c)));
-					continue;
-				}
-
-				// check ops
-				if (isOperator(c)){
-
-					String operator;
-
-
-				if (c == '+')
-			{
-				if (i != input.length()-1 && input.charAt(i+1) == '+')
-					{
-						operator = "++";
-						i++; 
-						
-					}
-
-				else
-					operator = "+";
-					 continue;
-			}
-
-			else if (c == '-')
-			{
-				if (i != input.length()-1 && input.charAt(i+1) == '-')
-					{
-						operator = "--";
-						i++;
-					}
-
-				else
-					operator = "-";
-			}
-
-			else if (c == '*')
-			{
-				if (i != input.length()-1 && input.charAt(i+1) == '*')
-					{
-						operator = "**";
-						i++;
-					}
-				else 
-					operator = "*";
-				
-			}
-
-			else if (c == '/')
-			{
-				operator = "/";
-			}
-
-			else if (c == '%')
-			{
-				operator = "%";
-			}
-
-
-			else if (c == '&')
-			{
-				if (i != input.length()-1 && input.charAt(i+1) == '&')
-					{
-						operator = "&&";
-						i++;
-					}
-				else {
-					tokens.add(new Token(TokenType.EOI, "ERROR"));
-					continue;
-				}
-			}
-
-			else if (c == '|')
-			{
-				if (i != input.length()-1 && input.charAt(i+1) == '|')
-					{
-						operator = "||";
-						i++;
-					}
-				else {	
-					tokens.add(new Token(TokenType.EOI, "ERROR"));
-					continue; 
-				}
-			}
-			else if (c == '>')
-			{
-				operator = ">";
-			}
-			else if (c == '<')
-			{
-				operator = "<";
-			}
-			else if (c == '=');
-			{
-				operator = "=";
-			}
-
-					tokens.add(new Token(TokenType.OPERATOR, operator));
-				
-				} // end operator clause
 		}
-			
-			
-			
-			// Check if the character is a digit
-			// tokens.add( new Token(TokenType.KEYWORD, isKeyword(input)) );
-		
-	
 		return tokens;
 	}
-} //end scanner class
-
+		public static void main(String args[]){
+			System.out.println("Enter the input you'd like to tokenize: ");
+			String input = System.console().readLine();
+			List<Token> tokens = scan(input);
+			for(Token token : tokens){
+				System.out.println(token);
+			}
+		}
+}
