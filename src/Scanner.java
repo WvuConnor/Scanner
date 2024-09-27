@@ -1,5 +1,6 @@
 import java.util.*;
 
+
 public class Scanner {
 
     enum TokenType {
@@ -20,176 +21,122 @@ public class Scanner {
             return "Token{type=" + type + ", value=" + value + "}";
         }
     }
-    private static final int[][] stateTransitionTable = {
-        //   [letter] [digit] [operator] [paren] [bracket] [whitespace] [EOF]
-        {1, 2, 3, 4, 5, 0, -1}, //State 0 = Start 
-        {1, 1, -1, -1, -1, -1, -1}, // State 1 = Identifier
-        {-1, 2, -1, -1, -1, -1, -1}, // State 2 = Number
-        {-1, -1, -1, -1, -1, -1, -1}, // State 3 = Operator
-        {-1, -1, -1, -1, -1, -1, -1}, // State 4 = Parenthesis
-        {-1, -1, -1, -1, -1, -1, -1}, // State 5 = Bracket
-    };
+			//creates an immutable map
+	static Map<Character, Integer> stateMap = Map.ofEntries(
+		new AbstractMap.SimpleEntry<Character, Integer>('(', 1),
+		new AbstractMap.SimpleEntry<Character, Integer>(')', 2),
+		new AbstractMap.SimpleEntry<Character, Integer>('{', 3),
+		new AbstractMap.SimpleEntry<Character, Integer>('}', 4),
+		new AbstractMap.SimpleEntry<Character, Integer>('&', 5),
+		new AbstractMap.SimpleEntry<Character, Integer>('|', 6),
+		new AbstractMap.SimpleEntry<Character, Integer>('!', 7),
+		new AbstractMap.SimpleEntry<Character, Integer>('=', 8),
+		new AbstractMap.SimpleEntry<Character, Integer>('.', 9),
+		new AbstractMap.SimpleEntry<Character, Integer>('+', 10),
+		new AbstractMap.SimpleEntry<Character, Integer>('-', 11),
+		new AbstractMap.SimpleEntry<Character, Integer>('*', 12),
+		new AbstractMap.SimpleEntry<Character, Integer>('/', 13),
+		new AbstractMap.SimpleEntry<Character, Integer>('%', 14),
+		new AbstractMap.SimpleEntry<Character, Integer>('<', 15),
+		new AbstractMap.SimpleEntry<Character, Integer>('>', 16),
+		new AbstractMap.SimpleEntry<Character, Integer>('w', 17),
+		new AbstractMap.SimpleEntry<Character, Integer>('h', 18),
+		new AbstractMap.SimpleEntry<Character, Integer>('i', 19),
+		new AbstractMap.SimpleEntry<Character, Integer>('l', 20),
+		new AbstractMap.SimpleEntry<Character, Integer>('e', 21),
+		new AbstractMap.SimpleEntry<Character, Integer>('f', 22),
+		new AbstractMap.SimpleEntry<Character, Integer>('o', 23),
+		new AbstractMap.SimpleEntry<Character, Integer>('r', 24),
+		new AbstractMap.SimpleEntry<Character, Integer>('a', 25),
+		new AbstractMap.SimpleEntry<Character, Integer>('t', 26),
+		new AbstractMap.SimpleEntry<Character, Integer>('n', 27)
+	);
 
-    // Dictionary for keywords and operators
-    private static final Map<String, TokenType> dictionary = new HashMap<>();
-    static {
-        // Keywords
-        dictionary.put("if", TokenType.KEYWORD);
-        dictionary.put("while", TokenType.KEYWORD);
-        dictionary.put("for", TokenType.KEYWORD);
-        // Operators
-        dictionary.put("<", TokenType.OPERATOR);
-        dictionary.put("<=", TokenType.OPERATOR);
-        dictionary.put(">", TokenType.OPERATOR);
-        dictionary.put(">=", TokenType.OPERATOR);
-        dictionary.put("=", TokenType.OPERATOR);
-        dictionary.put("==", TokenType.OPERATOR);
-        dictionary.put("+", TokenType.OPERATOR);
-        dictionary.put("-", TokenType.OPERATOR);
-				dictionary.put("!", TokenType.OPERATOR);
-				dictionary.put("&&", TokenType.OPERATOR);
-				dictionary.put("||", TokenType.OPERATOR);
-				//Semicolon/Brackets/Parenthesis
-				dictionary.put("{", TokenType.BRACKET);
-				dictionary.put("}", TokenType.BRACKET);
-				dictionary.put("(", TokenType.PARENTHESIS);
-				dictionary.put(")", TokenType.PARENTHESIS);
-				dictionary.put(";", TokenType.SEMICOLON);
 
-				//Whitespace
-				dictionary.put(" ", TokenType.WHITESPACE);
-    }
 
-    public static List<Token> scan(String input) {
-        List<Token> tokens = new ArrayList<>();
-        int state = 0;
-        StringBuilder tokenValue = new StringBuilder();
-        char[] chars = input.toCharArray();
+	static Integer[][] stateTransition = {
+		{1, 2, 3, 4, 5, 7, 44, 9, 12, 29, 31, 33, 34, 35, 36, 38, 13, null, 25, null, null, 18, null, null, null, null, null, 40},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, 6, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, 8, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, 10, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 15, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 16, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 17, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 21, null, null, 19, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 20, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 22, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 23, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 24, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 26, null, null, null, null, 27, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 28, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, 30, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, 32, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, 37, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, 39, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 41, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 42, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 43, null, null, null, null},
+		{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+		{null, null, null, null, null, null, null, 45, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+	};
 
-        for (int i = 0; i < chars.length; i++) {
-            char c = chars[i];
-            int column = getColumn(c);
+	static TokenType acceptingStates[] = {};
 
-            if (column == -1) {
-                throw new IllegalArgumentException("Invalid input character: " + c);
-            }
-            if (c == '<' || c == '>' || c == '!') {
-                if (i + 1 < chars.length && chars[i + 1] == '=') {
-                    tokenValue.append(c).append('=');
-                    i++;
-                    tokens.add(new Token(TokenType.OPERATOR, tokenValue.toString()));
-                    tokenValue.setLength(0);
-                    state = 0; 
-                    continue;
-                }
-            }
-						if (c == '&' || c == '|') {
-							if (i + 1 < chars.length && chars[i + 1] == c) {
-									tokenValue.append(c).append(c); 
-									i++; 
-									tokens.add(new Token(TokenType.OPERATOR, tokenValue.toString()));
-									tokenValue.setLength(0);
-									state = 0;
-									continue;
-							}
+	private static List<Token> scan(String input){
+		List<Token> tokens = new ArrayList<>();
+		int state = 0; // Start
+		StringBuilder currentToken = new StringBuilder();
+
+		for(char c : input.toCharArray()){
+				//Skip Whitespace
+				if(Character.isWhitespace(c)){
+					continue;
+				}
+				Integer column = stateMap.get(c);
+				if(stateTransition[state][column] != null){
+					state = stateTransition[state][column];
+					currentToken.append(c);
+					//check to see if accepting state  to finalize token
+					if(acceptingStates[state] != null){
+						tokens.add(new Token(acceptingStates[state], currentToken.toString()));
+						currentToken.setLength(0);
+						state = 0;
 					}
-            if (c == '(' || c == ')') {
-                if (tokenValue.length() > 0) {
-                    tokens.add(classifyToken(tokenValue.toString()));
-                    tokenValue.setLength(0);
-                }
-                tokens.add(new Token(TokenType.PARENTHESIS, Character.toString(c)));
-                state = 0; 
-                continue;
-            }
-						if(c == '{' || c == '}'){
-							if(tokenValue.length() > 0){
-								tokens.add(classifyToken(tokenValue.toString()));
-								tokenValue.setLength(0);
-							}
-							tokens.add(new Token(TokenType.BRACKET, Character.toString(c)));
-							state = 0;
-							continue;
-						}
-						if (Character.isWhitespace(c)) {
-							if(tokenValue.length() > 0){
-									tokens.add(classifyToken(tokenValue.toString()));
-									tokenValue.setLength(0);
-							}
-							tokens.add(new Token(TokenType.WHITESPACE, " "));
-							state = 0; 
-							continue;
-						}
-						if(c == ';'){
-							if(tokenValue.length() > 0){
-								tokens.add(classifyToken(tokenValue.toString()));
-								tokenValue.setLength(0);
-							}
-							tokens.add(new Token(TokenType.SEMICOLON, ";"));
-							state = 0;
-							continue;
-						}
-
-            //find next state depending on column
-            int nextState = stateTransitionTable[state][column];
-
-            if (nextState == -1) {
-                if (tokenValue.length() > 0) {
-                    tokens.add(classifyToken(tokenValue.toString()));
-                    tokenValue.setLength(0);
-                }
-                state = 0;
-            } else {
-                tokenValue.append(c);
-                state = nextState;
-            }
-        }
-
-        if (tokenValue.length() > 0) {
-            tokens.add(classifyToken(tokenValue.toString()));
-        }
-
-				tokens.add(new Token(TokenType.EOI, "End of Input"));
-
-        return tokens;
-    }
-
-    private static Token classifyToken(String tokenValue) {
-        if (dictionary.containsKey(tokenValue)) {
-            return new Token(dictionary.get(tokenValue), tokenValue);
-        } else if (Character.isDigit(tokenValue.charAt(0))) {
-            return new Token(TokenType.LITERAL, tokenValue);
-        } else {
-            return new Token(TokenType.IDENTIFIER, tokenValue);
-        }
-    }
-
-    private static int getColumn(char c) {
-        if (Character.isLetter(c)) {
-            return 0; //Column 0 (Letter)
-        } else if (Character.isDigit(c)) {
-            return 1; //Column 1 (Number)
-        } else if ("+-*/<>=!|&".indexOf(c) >= 0) {
-            return 2; // Column 2 (Operators)
-        } else if (c == '(' || c == ')') {
-            return 3; //Column 3 (Parenthesis)
-        } else if (c == '{' || c == '}') {
-            return 4; //Column 4 (Bracket)
-        } else if (Character.isWhitespace(c)) {
-            return 5; //Column 5 (Whitespace)
-        } else if (c == ';') {
-            return 6; //Column 6 (Semicolon)
-        } else {
-            return -1;
-        }
-    }
-
-    public static void main(String[] args) {
-				System.out.println("Enter the input you'd like to tokenize: ");
-				String input = System.console().readLine();
-        List<Token> tokens = scan(input);
-        for (Token token : tokens) {
-            System.out.println(token);
-        }
-    }
+				}else{
+					throw new RuntimeException("Invalid Character: " + c);
+				}
+		}
+		return tokens;
+	}
+		public static void main(String args[]){
+			System.out.println("Enter the input you'd like to tokenize: ");
+			String input = System.console().readLine();
+			List<Token> tokens = scan(input);
+			for(Token token : tokens){
+				System.out.println(token);
+			}
+	
+		}
 }
