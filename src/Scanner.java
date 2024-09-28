@@ -18,7 +18,7 @@ public class Scanner {
 
         @Override
         public String toString() {
-            return "Token{type=" + type + ", value=" + value + "}";
+            return "Token{type='" + type + "', value='" + value + "'}";
         }
     }
 	//creates an immutable map
@@ -135,9 +135,10 @@ public class Scanner {
 		TokenType.OPERATOR, TokenType.IDENTIFIER};
 
 	private static List<Token> scan(String input){
+		input += " "; // Add whitespace to end of input to finalize last token
 		List<Token> tokens = new ArrayList<>();
 		int state = 0; // Start
-		int bookmark = 0;
+		int bookmark = 0; // Start of token
 
 		for(int i = 0; i < input.length(); i++){
 				char c = input.charAt(i);
@@ -151,25 +152,16 @@ public class Scanner {
 
 				if(stateTransition[state][stateMap.get(c)] != null){
 					//check to see if accepting state  to finalize token
-					if(acceptingStates[state] != null && i < input.length() - 1 && stateTransition[state][i+1] != null && acceptingStates[stateTransition[state][i+1]] != acceptingStates[state]){
+					if(acceptingStates[state] != null && i < input.length() - 1 && stateTransition[state][i+1] != null && acceptingStates[stateTransition[state][i+1]] != acceptingStates[state])
 						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
-						state = 0;
-						bookmark = i;
-					} else if (input.length() == i){
+					else if (input.length() == i)
 						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
-						state = 0;
-						bookmark = i;
-					}
 				} else {
-					if(acceptingStates[state] != null){
+					if(acceptingStates[state] != null)
 						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
-						state = 0;
-						bookmark = i;
-					} else {
-						System.out.println("Error: Invalid Token");
-						return null;
-					}
 				}
+				state = 0;
+				bookmark = i;
 				state = stateTransition[state][stateMap.get(c)];
 		}
 		return tokens;
