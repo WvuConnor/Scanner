@@ -150,7 +150,6 @@ public class Scanner {
 				}
 
 				if(stateTransition[state][stateMap.get(c)] != null){
-					System.out.println("State: " + state + " - Char: " + c);
 					//check to see if accepting state  to finalize token
 					if(acceptingStates[state] != null && i < input.length() - 1 && stateTransition[state][i+1] != null && acceptingStates[stateTransition[state][i+1]] != acceptingStates[state]){
 						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
