@@ -142,36 +142,36 @@ public class Scanner {
 		for(int i = 0; i < input.length(); i++){
 				char c = input.charAt(i);
 				
-				if(c == ' '){
+				if(Character.isWhitespace(c)){
 					tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
 					state = 0;
-					bookmark = i;
+					bookmark = i+1;
 					continue;
 				}
 
 				if(stateTransition[state][stateMap.get(c)] != null){
-					state = stateTransition[state][stateMap.get(c)];
 					System.out.println("State: " + state + " - Char: " + c);
 					//check to see if accepting state  to finalize token
 					if(acceptingStates[state] != null && i < input.length() - 1 && stateTransition[state][i+1] != null && acceptingStates[stateTransition[state][i+1]] != acceptingStates[state]){
 						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
 						state = 0;
-						bookmark = i+1;
-					} else if (input.length() - 1 == i){
+						bookmark = i;
+					} else if (input.length() == i){
 						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
 						state = 0;
-						bookmark = i+1;
+						bookmark = i;
 					}
 				} else {
 					if(acceptingStates[state] != null){
 						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
 						state = 0;
-						bookmark = i+1;
+						bookmark = i;
 					} else {
 						System.out.println("Error: Invalid Token");
 						return null;
 					}
 				}
+				state = stateTransition[state][stateMap.get(c)];
 		}
 		return tokens;
 	}
