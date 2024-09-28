@@ -132,36 +132,44 @@ public class Scanner {
 		TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.IDENTIFIER, TokenType.KEYWORD, 
 		TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, 
 		TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.OPERATOR, 
-		TokenType.OPERATOR, TokenType.KEYWORD, TokenType.IDENTIFIER};
+		TokenType.OPERATOR, TokenType.IDENTIFIER};
 
 	private static List<Token> scan(String input){
 		List<Token> tokens = new ArrayList<>();
 		int state = 0; // Start
-		StringBuilder currentToken = new StringBuilder();
+		int bookmark = 0;
 
 		for(int i = 0; i < input.length(); i++){
 				char c = input.charAt(i);
-
-				//Skip Whitespace
-				if(Character.isWhitespace(c)){
+				
+				if(c == ' '){
+					tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
+					state = 0;
+					bookmark = i;
 					continue;
 				}
-				Integer column = stateMap.get(c);
-				if(stateTransition[state][column] != null){
-					state = stateTransition[state][column];
-					System.out.println("State: " + state + " - Column: " + column + " - Char: " + c);
-					currentToken.append(c);
+
+				if(stateTransition[state][stateMap.get(c)] != null){
+					state = stateTransition[state][stateMap.get(c)];
+					System.out.println("State: " + state + " - Char: " + c);
 					//check to see if accepting state  to finalize token
+					if(acceptingStates[state] != null && i < input.length() - 1 && stateTransition[state][i+1] != null && acceptingStates[stateTransition[state][i+1]] != acceptingStates[state]){
+						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
+						state = 0;
+						bookmark = i+1;
+					} else if (input.length() - 1 == i){
+						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
+						state = 0;
+						bookmark = i+1;
+					}
+				} else {
 					if(acceptingStates[state] != null){
-						if(i < input.length() - 1 && !Character.isWhitespace(input.charAt(i+1)) &&  stateTransition[state][stateMap.get(input.charAt(i+1))] == null){
-							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
-							currentToken.setLength(0);
-							state = 0;
-						} else {
-							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
-							currentToken.setLength(0);
-							state = 0;
-						}
+						tokens.add(new Token(acceptingStates[state], input.substring(bookmark, i)));
+						state = 0;
+						bookmark = i+1;
+					} else {
+						System.out.println("Error: Invalid Token");
+						return null;
 					}
 				}
 		}
