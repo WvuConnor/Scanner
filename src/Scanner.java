@@ -151,21 +151,42 @@ public class Scanner {
 					state = stateTransition[state][column];
 					System.out.println("State: " + state + " - Column: " + column + " - Char: " + c);
 					currentToken.append(c);
-					//check to see if accepting state  to finalize token
+					//check to see if at an accepting state  to finalize token
 					if(acceptingStates[state] != null){
-						if(i < input.length() - 1 && !Character.isWhitespace(input.charAt(i+1)) &&  stateTransition[state][stateMap.get(input.charAt(i+1))] == null){
+						if(i < input.length() - 1 && !Character.isWhitespace(input.charAt(i+1)) && stateTransition[state][stateMap.get(input.charAt(i+1))] == null){
 							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
 							currentToken.setLength(0);
 							state = 0;
+                            
 						} else {
+                            if (Character.isAlphabetic(c))
+                            {
+                                while (Character.isAlphabetic(input.charAt(i+1)))
+                                {
+                                    i++;
+                                    currentToken.append(input.charAt(i));
+                                }
+                            }
+                            else if (Character.isDigit(c)) {
+                            while (i < input.length() -1&& Character.isDigit(input.charAt(i+1)))
+                            {
+                               
+                                i++;
+                                 currentToken.append(input.charAt(i));
+                                
+                            }
+                        }
 							tokens.add(new Token(acceptingStates[state], currentToken.toString()));
 							currentToken.setLength(0);
 							state = 0;
+                            }
+
 						}
 					}
 				}
-		}
+		
 		return tokens;
+            
 	}
 		public static void main(String args[]){
 			System.out.println("Enter the input you'd like to tokenize: ");
