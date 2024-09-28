@@ -1,10 +1,19 @@
+/*
+ * Scanner.java
+ * This program is a simple scanner that tokenizes input into keywords, operators, identifiers, literals, parenthesis, brackets and whitespace.
+ * 
+ * @authors: Brandon Hines, Tucker Amon, Steven Poripski
+ * @reviewers: Connor White, Luke Pupilli, Creek Richmond
+ * 
+ */
+
 import java.util.*;
 
 
 public class Scanner {
 
     enum TokenType {
-        KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET, SEMICOLON, WHITESPACE, EOI;
+        KEYWORD, OPERATOR, IDENTIFIER, LITERAL, PARENTHESIS, BRACKET;
     }
 
     static class Token {
@@ -39,6 +48,7 @@ public class Scanner {
 		new AbstractMap.SimpleEntry<>('%', 13),
 		new AbstractMap.SimpleEntry<>('<', 14),
 		new AbstractMap.SimpleEntry<>('>', 15),
+
 		new AbstractMap.SimpleEntry<>('0', 16),
 		new AbstractMap.SimpleEntry<>('1', 16),
 		new AbstractMap.SimpleEntry<>('2', 16),
@@ -62,6 +72,7 @@ public class Scanner {
 		new AbstractMap.SimpleEntry<>('t', 26),
 		new AbstractMap.SimpleEntry<>('n', 27),
 		new AbstractMap.SimpleEntry<>('c', 28),
+		
 		new AbstractMap.SimpleEntry<>('b', 29),
 		new AbstractMap.SimpleEntry<>('g', 29),
 		new AbstractMap.SimpleEntry<>('j', 29),
