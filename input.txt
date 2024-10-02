@@ -1,0 +1,27 @@
+public static void main(String args[]){
+			System.out.println("Enter the name of the file you'd like to tokenize: ");
+			String path = System.console().readLine();
+			List<Token> tokens = new ArrayList<>();
+
+			try {
+				File newFile = new File(path);
+				if(newFile.createNewFile()){
+					System.out.println("File created: " + newFile.getName());
+				} else {
+					System.out.println("File already exists.");
+				}
+
+			System.out.println("Tokenizing file: '" + newFile.getName() + '\'');
+
+			System.out.println(newFile.exists());
+			System.out.println(newFile.isDirectory());
+			System.out.println(newFile.canRead());
+
+			} catch (IOException e) {
+				System.out.println("An error occurred: " + e);
+			}
+
+			// Once all tokens are found, print them
+			for(Token token : tokens)
+				System.out.println(token);
+		} reaper23
