@@ -1,21 +1,6 @@
-public static void main(String args[]){
-			System.out.println("Enter the name of the file you'd like to tokenize: ");
-			String path = System.console().readLine();
-			List<Token> tokens = new ArrayList<>();
-
-			File newFile = new File(path);
-
-			try (RandomAccessFile file = new RandomAccessFile(newFile.getAbsolutePath(), "r")) {
-				System.out.println("Tokenizing file: '" + newFile.getName() + '\'');
-				String line;
-				while((line = file.readLine()) != null)
-					tokens.addAll(scan(line));
-				file.close();
-			} catch(IOException e){
-				System.out.println("Error reading file: " + e);
-			}
-
-			// Once all tokens are found, print them
-			for(Token token : tokens)
-				System.out.println(token);
-		}
+#include <stdio.h>
+int main() {
+   // printf() displays the string inside quotation
+   printf("Hello, World!");
+   return 0;
+}
