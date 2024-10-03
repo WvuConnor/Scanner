@@ -243,9 +243,8 @@ public class Scanner {
 
 			File newFile = new File(path);
 
-			System.out.println("Tokenizing file: '" + newFile.getName() + '\'');
-
-			try (RandomAccessFile file = new RandomAccessFile(newFile, "r")) {
+			try (RandomAccessFile file = new RandomAccessFile(newFile.getAbsolutePath(), "r")) {
+				System.out.println("Tokenizing file: '" + newFile.getName() + '\'');
 				String line;
 				while((line = file.readLine()) != null)
 					tokens.addAll(scan(line));
