@@ -250,7 +250,8 @@ public class Scanner {
 					tokens.addAll(scan(line));
 				file.close();
 			} catch(IOException e){
-				System.out.println("Error reading file: " + e);
+				String error = e.getLocalizedMessage();
+				System.out.println("Error reading the file: " + error.substring(error.indexOf('(') + 1, error.length()-1));
 			}
 
 			// Once all tokens are found, print them
