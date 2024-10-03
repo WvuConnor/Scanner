@@ -251,7 +251,7 @@ public class Scanner {
 				file.close();
 			} catch(IOException e){
 				String error = e.getLocalizedMessage();
-				System.out.println("Error reading file '"+ newFile.getName() + "': " + error.substring(error.indexOf('(') + 1, error.length()-1) + " check the file path and try again.");
+				System.out.println("Error reading file '"+ newFile.getName() + "': " + error.substring(error.indexOf('(') + 1, error.length()-1) + ", check the file path and try again.");
 			}
 
 			// Once all tokens are found, print them
